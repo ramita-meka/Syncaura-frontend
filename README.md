@@ -122,8 +122,8 @@ FRONTEND/
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/syncaura-frontend.git
-cd FRONTEND
+git clone "https://github.com/your-org/syncaura-frontend.git"
+cd  Syncaura-frontend
 ```
 
 ### 2️⃣ Install Dependencies

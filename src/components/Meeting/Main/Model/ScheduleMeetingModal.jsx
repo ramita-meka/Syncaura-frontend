@@ -125,7 +125,7 @@ export default function ScheduleMeetingModal({ onClose, onSave }) {
                   {...register("title", { required: true })}
                   placeholder="eg: my first meeting"
                   className="w-full h-11 rounded-full p-3
-                  bg-white dark:bg-[#2E2F2F] placeholder:text-[#898888]
+                  bg-white text-[#898888] dark:bg-[#2E2F2F] placeholder:text-[#898888]
                   dark:text-gray-200 outline-none"
                 />
               </div>
@@ -234,7 +234,7 @@ export default function ScheduleMeetingModal({ onClose, onSave }) {
                 <input
                   {...register("participants")}
                   placeholder="Enter emails separated by commas"
-                  className="w-full h-11 rounded-full p-3
+                  className="w-full text-[#898888] h-11 rounded-full p-3
                   bg-white dark:bg-[#2E2F2F] placeholder:text-[#898888]
                   dark:text-gray-200 outline-none"
                 />

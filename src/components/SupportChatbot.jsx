@@ -72,24 +72,38 @@ export default function SupportChatbot() {
         }
     }, []);
 
+    const botTextRef = useRef("");
+
     const streamBotMessage = (text) => {
         const chunks = text.split(" ");
         let i = 0;
 
+        botTextRef.current = "";
+
         setMessages((p) => [...p, { from: "bot", text: "" }]);
+
         streamRef.current = setInterval(() => {
-            setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].text += ` ${chunks[i]}`;
-                return updated;
-            });
-            i++;
             if (i >= chunks.length) {
                 clearInterval(streamRef.current);
                 setLoading(false);
+                return;
             }
+
+            botTextRef.current += (i === 0 ? "" : " ") + chunks[i];
+
+            setMessages((prev) =>
+                prev.map((m, idx) =>
+                    idx === prev.length - 1
+                        ? { ...m, text: botTextRef.current }
+                        : m
+                )
+            );
+
+            i++;
         }, 120);
     };
+
+
 
     const terminateBot = () => {
         clearInterval(streamRef.current);

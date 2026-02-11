@@ -42,26 +42,23 @@ const Header = ({ setOpen }) => {
         {/* RIGHT SECTION */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 items-end">
           {/* Desktop date */}
-          <div className="hidden sm:flex items-center gap-1.5 text-base dark:text-white">
-            <span className="font-bold">{dayName}</span>
-            <span className="font-light"> | {formattedDate}</span>
+          <div className="hidden xsm:flex items-center gap-2 text-base dark:text-white">
+            <div className="flex items-center justify-center gap-1.5 ">
+              <span className="font-bold">{dayName}</span>
+              <span className="font-light"> | {formattedDate}</span>
+            </div>
+            <ToggleSwitch />
           </div>
 
-        {/* Mobile toggle and date below */}
-          <div className="sm:hidden flex flex-col items-center">
+          {/* Mobile toggle and date below */}
+          <div className="xsm:hidden flex flex-col items-center">
             <ToggleSwitch />
-            <span className="text-sm dark:text-white mt-1 text-center">
-  <span className="font-medium">{dayName}</span>
-  {" | "}
-  <span className="font-normal">{formattedDate}</span>
-</span>
-
           </div>
 
           {/* Desktop toggle */}
-          <div className="hidden sm:block">
+          {/* <div className="hidden xsm:block">
             <ToggleSwitch />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

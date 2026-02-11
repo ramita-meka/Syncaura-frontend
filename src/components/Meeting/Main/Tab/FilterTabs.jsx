@@ -13,7 +13,7 @@ export default function FilterTabs({ activeFilter, setActiveFilter }) {
       <div
         className="
           bg-[#EDEDED] dark:bg-[#383838]
-          w-[270px] h-[30px]          
+          w-[260px] h-[30px]          
           sm:w-96 sm:h-auto          
           flex items-center justify-between
           px-1
@@ -37,7 +37,7 @@ export default function FilterTabs({ activeFilter, setActiveFilter }) {
                   className="
                     absolute inset-0
                     bg-[#2461E6] dark:bg-[#73FBFD]
-                    rounded-[30px]
+                    rounded-[30px] 
                   "
                 />
               )}

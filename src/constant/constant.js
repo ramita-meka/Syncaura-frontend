@@ -581,7 +581,6 @@ export const CHATS = [
   },
 ];
 
-
 export const COMPLAINTS = [
   {
     id: "#1023",
@@ -719,8 +718,6 @@ export const COMPLAINTS = [
     ],
   },
 ];
-
-
 
 export const PROJECTS = [
   {
@@ -921,11 +918,15 @@ export const leaveHistory = [
 ];
 
 export const dummyNotifications = [
-{ id: 1, text: "Complaint #1101 has been resolved", time: "2 hours ago" },
-{ id: 2, text: "New notice posted: Final Exam Schedule", time: "5 hours ago" },
-{ id: 3, text: "Admin replied to ticket #1019", time: "1 day ago" },
-{ id: 4, text: "New event added to calendar", time: "2 days ago" },
-{ id: 5, text: "Profile updated successfully", time: "3 days ago" }
+  { id: 1, text: "Complaint #1101 has been resolved", time: "2 hours ago" },
+  {
+    id: 2,
+    text: "New notice posted: Final Exam Schedule",
+    time: "5 hours ago",
+  },
+  { id: 3, text: "Admin replied to ticket #1019", time: "1 day ago" },
+  { id: 4, text: "New event added to calendar", time: "2 days ago" },
+  { id: 5, text: "Profile updated successfully", time: "3 days ago" },
 ];
 
 export const notificationsList = [
@@ -1026,7 +1027,6 @@ export const notificationsList = [
     status: "No",
   },
 ];
-
 
 export const reportsList = [
   {
@@ -1149,10 +1149,248 @@ export const TASK_STATUS = [
 ];
 
 export const ANALYTICS_TASK_STATUS = [
-
   { id: "done", label: "Done", count: "45%", color: "#22C55E" },
   { id: "progress", label: "In Progress", count: "20%", color: "#137FEC" },
   { id: "todo", label: "To Do", count: "28%", color: "#FACC15" },
   { id: "blocked", label: "Blocked", count: "7%", color: "#EF4444" },
 ];
 
+export const PARTICIPANTS = [
+  { id: 1, name: "John Dev", initial: "J", color: "#C94A5C", isHost: true },
+  { id: 2, name: "Karthik S", initial: "K", color: "#10B981" },
+  { id: 3, name: "Lavanya K", initial: "L", color: "#D9923F" },
+  { id: 4, name: "Diya P", initial: "D", color: "#B91C1C" },
+  { id: 5, name: "Aarav M", initial: "A", color: "#8B5CF6" },
+  { id: 6, name: "Diya P", initial: "D", color: "#B23939" },
+  { id: 7, name: "Rahul T", initial: "R", color: "#5B6FC7" },
+  { id: 8, name: "Aarav M", initial: "A", color: "#059669" },
+  { id: 9, name: "Sneha R", initial: "S", color: "#16A34A" },
+  { id: 10, name: "Vikram J", initial: "V", color: "#C77D3F" },
+  { id: 11, name: "Ananya L", initial: "A", color: "#14B8A6" },
+  { id: 12, name: "Aarav M", initial: "A", color: "#8B5CF6" },
+  { id: 13, name: "Vikram J", initial: "V", color: "#C77D3F" },
+  { id: 14, name: "Ananya L", initial: "A", color: "#14B8A6" },
+  { id: 15, name: "Ananya L", initial: "A", color: "#14B8A6" },
+];
+
+export const calculateLayout = ({
+  setGridLayout,
+  gridRef,
+  participants,
+  perPage,
+  setPerPage,
+  setPages,
+  setCurrentPage,
+  currentPage,
+}) => {
+  if (!gridRef?.current) return;
+
+  const width = gridRef?.current.clientWidth;
+  const total = participants.length;
+
+  if (width < 768) {
+    setPerPage(8);
+
+    const totalPages = Math.ceil(total / perPage);
+    setPages(totalPages);
+
+    // prevent overflow page
+    if (currentPage >= totalPages) {
+      setCurrentPage(totalPages - 1);
+      return;
+    }
+
+    const remaining = total - currentPage * perPage;
+    const currentCount = Math.min(8, remaining);
+
+    let cols = 1;
+    let rows = 1;
+
+    switch (currentCount) {
+      case 8:
+      case 7:
+        cols = 2;
+        rows = 4;
+        break;
+      case 6:
+        cols = 2;
+        rows = 3;
+        break;
+      case 5:
+        cols = 2;
+        rows = 3;
+        break;
+      case 4:
+        cols = 2;
+        rows = 2;
+        break;
+      case 3:
+        cols = 1;
+        rows = 3;
+        break;
+      case 2:
+        cols = 1;
+        rows = 2;
+        break;
+      case 1:
+        cols = 1;
+        rows = 1;
+        break;
+      default:
+        cols = 1;
+        rows = 1;
+    }
+
+    setGridLayout({
+      cols,
+      rows,
+      cardWidth: 0,
+      cardHeight: 0,
+    });
+  } else if (width >= 768 && width < 1280) {
+    setPerPage(9);
+
+    const totalPages = Math.ceil(total / 9);
+    setPages(totalPages);
+
+    // prevent overflow page
+    if (currentPage >= totalPages) {
+      setCurrentPage(totalPages - 1);
+      return;
+    }
+
+    const remaining = total - currentPage * 9;
+    const currentCount = Math.min(9, remaining);
+
+    let cols = 1;
+    let rows = 1;
+
+    switch (currentCount) {
+      case 9:
+        cols = 3;
+        rows = 3;
+        break;
+
+      case 8:
+      case 7:
+        cols = 3;
+        rows = 3;
+        break;
+
+      case 6:
+        cols = 2;
+        rows = 3;
+        break;
+
+      case 5:
+        cols = 2;
+        rows = 3;
+        break;
+
+      case 4:
+        cols = 2;
+        rows = 2;
+        break;
+
+      case 3:
+        cols = 2;
+        rows = 3;
+        break;
+
+      case 2:
+        cols = 2;
+        rows = 1;
+        break;
+
+      case 1:
+        cols = 1;
+        rows = 1;
+        break;
+
+      default:
+        cols = 1;
+        rows = 1;
+    }
+
+    setGridLayout({
+      cols,
+      rows,
+      cardWidth: 0,
+      cardHeight: 0,
+    });
+  } else if (width >= 1024) {
+    setPerPage(12);
+
+    const totalPages = Math.ceil(total / 12);
+    setPages(totalPages);
+
+    // prevent overflow page
+    if (currentPage >= totalPages) {
+      setCurrentPage(totalPages - 1);
+      return;
+    }
+
+    const remaining = total - currentPage * 12;
+    const currentCount = Math.min(12, remaining);
+
+    let cols = 1;
+    let rows = 1;
+
+    switch (currentCount) {
+      case 12:
+        cols = 4;
+        rows = 3;
+        break;
+
+      case 11:
+      case 10:
+      case 9:
+        cols = 4;
+        rows = 3;
+        break;
+
+      case 8:
+      case 7:
+        cols = 4;
+        rows = 2;
+        break;
+
+      case 6:
+      case 5:
+        cols = 3;
+        rows = 2;
+        break;
+
+      case 4:
+        cols = 2;
+        rows = 2;
+        break;
+
+      case 3:
+        cols = 2;
+        rows = 3;
+        break;
+
+      case 2:
+        cols = 2;
+        rows = 1;
+        break;
+
+      case 1:
+        cols = 1;
+        rows = 1;
+        break;
+
+      default:
+        cols = 1;
+        rows = 1;
+    }
+
+    setGridLayout({
+      cols,
+      rows,
+      cardWidth: 0,
+      cardHeight: 0,
+    });
+  }
+};

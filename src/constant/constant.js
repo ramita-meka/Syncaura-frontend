@@ -11,7 +11,7 @@ export const CHATS = [
     profile: {
       name: "John Dev",
       post: "Frontend Engineer @ FlowBit",
-      gredient: "from-blue-400 to-blue-700",
+      gredient: "from-blue-400 to-blue-700"
     },
     chatDetails: {
       status: "Open",
@@ -22,7 +22,7 @@ export const CHATS = [
     files: [
       { name: "ui_notes.txt", size: "1.2 MB", date: "Dec 10" },
       { name: "components.png", size: "820 KB", date: "Dec 09" },
-    ],
+    ], isArchived: true ,
   },
 
   {
@@ -45,7 +45,7 @@ export const CHATS = [
       localTime: "09:10 AM (IST)",
       location: "Bangalore, India",
     },
-    files: [{ name: "api_schema.json", size: "900 KB", date: "Dec 11" }],
+    files: [{ name: "api_schema.json", size: "900 KB", date: "Dec 11" }], isArchived: true ,
   },
 
   {
@@ -71,7 +71,7 @@ export const CHATS = [
     files: [
       { name: "wireframe.fig", size: "2.8 MB", date: "Dec 14" },
       { name: "colors.pdf", size: "620 KB", date: "Dec 13" },
-    ],
+    ], isArchived: true 
   },
 
   {
@@ -94,7 +94,7 @@ export const CHATS = [
       localTime: "08:30 PM (IST)",
       location: "Hyderabad, India",
     },
-    files: [{ name: "deployment.yml", size: "450 KB", date: "Nov 02" }],
+    files: [{ name: "deployment.yml", size: "450 KB", date: "Nov 02" }], isArchived: true 
   },
 
   {
@@ -580,6 +580,7 @@ export const CHATS = [
     files: [{ name: "ops_checklist.docx", size: "430 KB", date: "Nov 24" }],
   },
 ];
+
 
 export const COMPLAINTS = [
   {

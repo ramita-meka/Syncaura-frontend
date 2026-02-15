@@ -4,8 +4,11 @@ import { useForm } from "react-hook-form";
 import SocialAuthButton from "../components/auth/SocialAuthButton";
 import { motion } from "framer-motion";
 import PasswordField from "../components/auth/PasswordField";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AnimatedInput from "../components/auth/AnimatedInput";
+import { toast } from "react-toastify";
+import { loginUser } from "../redux/features/authThunks";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
   const {
@@ -14,8 +17,8 @@ const SignIn = () => {
     watch,
     formState: { errors },
   } = useForm();
-  const [isSubmitting, setIsSubmitting]=useState(false)
-  
+  const dispatch=useDispatch()
+
   const wrapperRef = useRef(null);
   const passRef = useRef(null);
   const socialProviders = [
@@ -38,45 +41,78 @@ const SignIn = () => {
       onClick: () => console.log("Facebook Login"),
     },
   ];
+  const [isSubmitting, setIsSubmitting]=useState(false)
+  const navigate=useNavigate()
 
   const handleFocus = (ref) => {
     ref.current?.classList.add(
       "border-[#01509C]",
       "ring-2",
-      "ring-[#01509C]/30"
+      "ring-[#01509C]/30",
     );
   };
   const handleBlur = (ref) => {
     ref.current?.classList.remove(
       "border-[#01509C]",
       "ring-2",
-      "ring-[#01509C]/30"
+      "ring-[#01509C]/30",
     );
   };
-  const onSubmit = (data) => {
-   setIsSubmitting(true);
-   setTimeout(()=>{
-     console.log(data);
-     setIsSubmitting(false)
-   }, [1000])
-  };
-  const onError = (error) => {
-    console.log(error);
-  };
+  const onSubmit = async (data) => {
+     try {
+      setIsSubmitting(true)
+       const res = await dispatch(loginUser(data)).unwrap();
+       console.log(res);
+       
+ 
+       toast.success(`Welcome Back ${res?.user?.name}!!`);
+ 
+       switch (res?.user?.role) {
+         case "Admin":
+           navigate("/admin");
+           break;
+         case "Co-Admin":
+           navigate("/co-admin");
+           break;
+         default:
+           navigate("/user-dashboard");
+       }
+     } catch (err) {
+       toast.error(err || "Registration failed");
+     }finally{
+      setIsSubmitting(false)
+     }
+   };
+ 
+   const onError = (errors) => {
+    isSubmitting(false)
+     const firstError = Object.values(errors)[0];
+ 
+     if (firstError?.message) {
+       toast.error(firstError.message);
+     } else {
+       toast.error("Please fix the form errors");
+     }
+ 
+     console.log(errors);
+   };
+ 
   return (
     <div
       class="bg-[radial-gradient(ellipse_60%_70%_at_center,#4a9df0_0%,#01509C_65%,#013b73_100%)]
  w-full min-h-screen flex items-center justify-center overflow-hidden  "
     >
       <motion.div
-      className="relative flex items-center justify-center w-[90%] md:w-[80%] lg:w-3/4 2xl:w-1/2"
-      
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25, duration: 1 }}
-
-  
-    >
+        className="relative flex items-center justify-center w-[90%] md:w-[80%] lg:w-3/4 2xl:w-1/2"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 25,
+          duration: 1,
+        }}
+      >
         <div
           className="absolute -bottom-5 -right-6 md:-bottom-11 md:-right-11 z-20 size-20 md:size-25 rounded-full bg-linear-to-bl 
  from-[#868686] to-[#ECECEC]"
@@ -97,15 +133,16 @@ const SignIn = () => {
               </label>
               <div className="flex flex-col items-start justify-center w-full gap-1 ">
                 <AnimatedInput
-  type="email"
-  placeholder="Email"
-  iconType="mail"
-  register={register}
-  wrapperRef={wrapperRef}
-  handleFocus={handleFocus}
-  handleBlur={handleBlur}
-/>
-
+                  type="email"
+                  placeholder="Email"
+                  label={"Email"}
+                  name={"email"}
+                  iconType="mail"
+                  register={register}
+                  wrapperRef={wrapperRef}
+                  handleFocus={handleFocus}
+                  handleBlur={handleBlur}
+                />
               </div>
             </div>
 
@@ -151,7 +188,11 @@ const SignIn = () => {
                 transition={{ type: "spring", stiffness: 400 }}
                 className="text-[#F8F8F8] font-bold text-lg"
               >
-               {isSubmitting ? <Loader className="size-5 text-white animate-spin" /> : " Sign In"}
+                {isSubmitting ? (
+                  <Loader className="size-5 text-white animate-spin" />
+                ) : (
+                  " Sign In"
+                )}
               </motion.button>
             </motion.div>
             <div className="flex relative items-center justify-center w-full top-2 ">

@@ -6,6 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import PasswordField from "../components/auth/PasswordField";
 import { Link } from "react-router-dom";
 import AnimatedInput from "../components/auth/AnimatedInput";
+import { useSelector, useDispatch } from "react-redux";
+import { registerUser } from "../redux/features/authThunks";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const {
@@ -19,8 +23,8 @@ const SignUp = () => {
       role: "User",
     },
   });
+  const navigate = useNavigate();
   const roles = ["User", "Admin", "Co-Admin"];
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   useEffect(() => {
@@ -58,33 +62,62 @@ const SignUp = () => {
     },
   ];
 
+  const { user, isAuthenticated, isLoading, error } = useSelector(
+    (state) => state.auth,
+  );
+
+  const dispatch = useDispatch();
+
   const handleFocus = (ref) => {
     ref.current?.classList.add(
       "border-[#01509C]",
       "ring-2",
-      "ring-[#01509C]/30"
+      "ring-[#01509C]/30",
     );
   };
   const handleBlur = (ref) => {
     ref.current?.classList.remove(
       "border-[#01509C]",
       "ring-2",
-      "ring-[#01509C]/30"
+      "ring-[#01509C]/30",
     );
   };
-  const onSubmit = (data) => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      console.log(data);
-      setIsSubmitting(false);
-    }, [1000]);
+  const onSubmit = async (data) => {
+    try {
+      const res = await dispatch(registerUser(data)).unwrap();
+
+      toast.success("Account created successfully");
+
+      switch (res?.role || data?.role) {
+        case "Admin":
+          navigate("/admin");
+          break;
+        case "Co-Admin":
+          navigate("/co-admin");
+          break;
+        default:
+          navigate("/user-dashboard");
+      }
+    } catch (err) {
+      toast.error(err || "Registration failed");
+    }
   };
-  const onError = (error) => {
-    console.log(error);
+
+  const onError = (errors) => {
+    const firstError = Object.values(errors)[0];
+
+    if (firstError?.message) {
+      toast.error(firstError.message);
+    } else {
+      toast.error("Please fix the form errors");
+    }
+
+    console.log(errors);
   };
+
   return (
     <div
-      class="bg-[radial-gradient(ellipse_60%_70%_at_center,#4a9df0_0%,#01509C_65%,#013b73_100%)]
+      className="bg-[radial-gradient(ellipse_60%_70%_at_center,#4a9df0_0%,#01509C_65%,#013b73_100%)]
  w-full min-h-screen flex items-center justify-center overflow-hidden  "
     >
       <motion.div
@@ -129,10 +162,12 @@ const SignUp = () => {
               <div className="flex flex-col items-start justify-center w-full gap-1 ">
                 <AnimatedInput
                   type="text"
+                  name={"name"}
                   placeholder="John Doe"
                   iconType="user"
                   register={register}
                   wrapperRef={userRef}
+                  label={"Full Name"}
                   handleFocus={handleFocus}
                   handleBlur={handleBlur}
                 />
@@ -145,8 +180,10 @@ const SignUp = () => {
               <div className="flex flex-col items-start justify-center w-full gap-1 ">
                 <AnimatedInput
                   type="email"
+                  name={"email"}
                   placeholder="Email"
                   iconType="mail"
+                  label={"Email"}
                   register={register}
                   wrapperRef={wrapperRef}
                   handleFocus={handleFocus}
@@ -160,10 +197,21 @@ const SignUp = () => {
               </label>
               <div className="flex flex-col items-start justify-center w-full gap-1 ">
                 <PasswordField
+                  name="password"
+                  placeholder="Password"
                   register={register}
                   handleFocus={handleFocus}
                   handleBlur={handleBlur}
                   passRef={passRef}
+                  validation={{
+                    required: "Password is required",
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/,
+                      message:
+                        "Min 6 chars, 1 uppercase, 1 lowercase, 1 number & 1 special character required",
+                    },
+                  }}
                 />
               </div>
             </div>
@@ -174,10 +222,17 @@ const SignUp = () => {
               </label>
               <div className="flex flex-col items-start justify-center w-full gap-1 ">
                 <PasswordField
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
                   register={register}
                   handleFocus={handleFocus}
                   handleBlur={handleBlur}
                   passRef={conPassRef}
+                  validation={{
+                    required: "Confirm Password is required",
+                    validate: (value) =>
+                      value === watch("password") || "Passwords do not match",
+                  }}
                 />
               </div>
             </div>
@@ -203,14 +258,14 @@ const SignUp = () => {
                          bg-white px-4 py-2 text-sm w-full"
                       >
                         {/*  selected value shown */}
-                        <span className="text-black" >{field.value}</span>
+                        <span className="text-black">{field.value}</span>
 
                         <motion.span
                           animate={{ rotate: open ? 180 : 0 }}
                           transition={{ duration: 0.2 }}
                           className="text-xs text-black"
                         >
-                          <ChevronDown/>
+                          <ChevronDown />
                         </motion.span>
                       </motion.div>
 
@@ -264,13 +319,13 @@ const SignUp = () => {
             >
               <motion.button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isLoading}
                 whileHover={{ y: -1 }}
                 whileTap={{ y: 1 }}
                 transition={{ type: "spring", stiffness: 400 }}
                 className="text-[#000000] font-bold text-lg"
               >
-                {isSubmitting ? (
+                {isLoading ? (
                   <Loader className="size-5 text-[#000000] animate-spin" />
                 ) : (
                   " Create Account"

@@ -116,8 +116,8 @@ export default function Documents() {
               onClick={() => setSelectedTab(item)}
               className={`px-4 py-2 rounded-xl border ${
                 selectedTab === item
-                  ? "bg-[#EFF6FF] dark:bg-[#344343] border-[#DBEAFE] dark:border-[#73FBFD]"
-                  : "border-[#EAECEF] text-[#989696]"
+                  ? "bg-[#EFF6FF] dark:bg-[#344343] text-blue-500 dark:text-[#73FBFD] border-[#DBEAFE] dark:border-[#73FBFD]"
+                  : "border-[#EAECEF] text-black dark:text-[#989696]"
               }`}
             >
               {item}
@@ -130,7 +130,7 @@ export default function Documents() {
             onClick={() => setShowFilter((prev) => !prev)}
             className={`flex items-center gap-2 px-4 py-2 border rounded-xl ${
               showFilter
-                ? "border-[#2461E6] dark:border-[#73FBFD]"
+                ? "border-[#2461E6]  dark:border-[#73FBFD]"
                 : "border-[#EAECEF]"
             }`}
           >

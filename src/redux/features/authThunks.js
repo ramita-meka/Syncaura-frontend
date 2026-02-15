@@ -29,46 +29,20 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-export const logoutUser = createAsyncThunk(
-  "auth/logoutUser",
+
+export const refreshAccessToken = createAsyncThunk(
+  "auth/refreshToken",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.post("/auth/logout");
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to logout",
-      );
-    }
-  },
-);
+      const refreshToken = localStorage.getItem("refreshToken");
 
-export const getCurrentUser = createAsyncThunk(
-  "auth/getCurrentUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await api.get("/auth/me");
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch current user",
-      );
-    }
-  },
-);
+      const res = await api.post("/auth/refresh", { refreshToken });
 
-export const updateUserProfile = createAsyncThunk(
-  "auth/updateUserProfile",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const res = await api.put("/auth/profile", userData);
       return res.data;
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to update profile",
-      );
+      return rejectWithValue("Session expired");
     }
-  },
+  }
 );
 
 export const changePassword = createAsyncThunk(

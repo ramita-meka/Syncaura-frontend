@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Provider } from 'react-redux';
-import { store } from './redux/store';
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { store } from "./redux/store";
 import MainLayout from "./layouts/MainLayout";
 
 import Projects from "./pages/Projects";
@@ -23,10 +23,48 @@ import Admin from "./pages/Admin";
 import Home from "./pages/Home";
 import AdminSidebar from "./components/admin/AdminSidebar";
 import AdminHeader from "./components/admin/AdminHeader";
+import { ToastContainer, Bounce } from "react-toastify";
+import { refreshAccessToken } from "./redux/features/authThunks";
+import { useEffect } from "react";
+import { Loader } from "lucide-react";
 
 export default function App() {
+  const dispatch = useDispatch();
+  const isDark = useSelector((state) => state.theme.isDark);
+  const user = useSelector((state) => state.auth.user);
+  const authChecking = useSelector((state) => state.auth.authChecking);
+
+  useEffect(() => {
+    dispatch(refreshAccessToken());
+  }, [dispatch]);
+  console.log({ user, authChecking });
+
+  if(authChecking){
+    return (
+      <>
+      <div data-theme={isDark ? "dark" : "light"} className="w-full h-screen bg-white dark:bg-black flex items-center justify-center ">
+        <Loader className="size-5 lg:size-13 page-2xl:size-15 text-blue-600 dark:text-[#73FBFD] animate-spin duration-200" />
+      </div>
+      </>
+    )
+  }
+
   return (
-  
+    <>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={isDark ? "dark" : "light"}
+        transition={Bounce}
+      />
+
       <BrowserRouter>
         <Routes>
           <Route path="/normal-dashboard" element={<Dashboard />} />
@@ -34,23 +72,20 @@ export default function App() {
           <Route
             path="/admin"
             element={
-              <MainLayout
-                SideBar={AdminSidebar}
-                TopbarComponent={AdminHeader}
-              >
+              <MainLayout SideBar={AdminSidebar} TopbarComponent={AdminHeader}>
                 <Admin />
               </MainLayout>
             }
           />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
-           <Route path="/meet/:id" element={<CurrentMeet />} />
+          <Route path="/meet/:id" element={<CurrentMeet />} />
 
           {/* User dashboard with a different Topbar */}
           <Route
             path="/user-dashboard"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <div className="w-full h-full">
                   <UserDashboard />
                 </div>
@@ -92,7 +127,7 @@ export default function App() {
           <Route
             path="/chat"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <Chat />
               </MainLayout>
             }
@@ -100,7 +135,7 @@ export default function App() {
           <Route
             path="/notice"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <Notice />
               </MainLayout>
             }
@@ -108,7 +143,7 @@ export default function App() {
           <Route
             path="/documents"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <Documents />
               </MainLayout>
             }
@@ -117,7 +152,7 @@ export default function App() {
           <Route
             path="/complaints"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <Complaints />
               </MainLayout>
             }
@@ -125,14 +160,13 @@ export default function App() {
           <Route
             path="/settings"
             element={
-              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar} >
+              <MainLayout TopbarComponent={Header} SideBar={MobileSidebar}>
                 <Settings />
               </MainLayout>
             }
           />
-          
         </Routes>
       </BrowserRouter>
-
+    </>
   );
 }

@@ -2,18 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   registerUser,
   loginUser,
-  logoutUser,
-  getCurrentUser,
-  updateUserProfile,
   changePassword,
+  refreshAccessToken,
 } from "../features/authThunks";
+
+const token = localStorage.getItem("token");
 
 const initialState = {
   user: null,
-  token: localStorage.getItem("token") || null,
+  token,
   isLoading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!token,
+  authChecking: true,
 };
 
 const authSlice = createSlice({
@@ -33,10 +34,13 @@ const authSlice = createSlice({
       }
     },
     logout(state) {
+      state.isLoading=true
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      state.isLoading=false;
     },
   },
   extraReducers: (builder) => {
@@ -48,14 +52,14 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { user, token } = action.payload;
+        const { user, tokens } = action.payload;
         state.user = user;
-        state.token = token;
+        state.token = tokens.accessToken;
         state.isAuthenticated = true;
-        if (token) {
-          localStorage.setItem("token", token);
-        }
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
       })
+
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
@@ -68,71 +72,40 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { user, token } = action.payload;
+        const { user, tokens } = action.payload;
         state.user = user;
-        state.token = token;
+        state.token = tokens.accessToken;
         state.isAuthenticated = true;
-        if (token) {
-          localStorage.setItem("token", token);
-        }
+
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
       })
+
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-
-      // Logout User
-      .addCase(logoutUser.pending, (state) => {
+      .addCase(refreshAccessToken.pending, (state) => {
+        state.authChecking = true;
         state.isLoading = true;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = null;
-        state.token = null;
-        state.isAuthenticated = false;
-        localStorage.removeItem("token");
-      })
-      .addCase(logoutUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        // Still clear auth state even if server logout fails
-        state.user = null;
-        state.token = null;
-        state.isAuthenticated = false;
-        localStorage.removeItem("token");
-      })
-
-      // Get Current User
-      .addCase(getCurrentUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
+        const { user, accessToken } = action.payload;
+        state.user = user;
+        state.token = accessToken;
         state.isAuthenticated = true;
+        state.authChecking=false
+        localStorage.setItem("accessToken", accessToken);
       })
-      .addCase(getCurrentUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        state.isAuthenticated = false;
-        state.token = null;
-        localStorage.removeItem("token");
-      })
-
-      // Update User Profile
-      .addCase(updateUserProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-      })
-      .addCase(updateUserProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      .addCase(refreshAccessToken.rejected, (state) => {
+        state.authChecking = false;
+        state.isLoading=false
+        state.isAuthenticated=false
+        state.user=null
       })
 
+     
       // Change Password
       .addCase(changePassword.pending, (state) => {
         state.isLoading = true;

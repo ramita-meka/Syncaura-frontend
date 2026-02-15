@@ -1,7 +1,9 @@
 import { useState } from "react";
 import ToggleSwitch from "../../dashboard/Header/ToggleSwitch";
+import { useSelector } from "react-redux";
 
 const Header = ({ setOpen }) => {
+  const user=useSelector((state)=> state.auth.user)
   const today = new Date();
 
   const formattedDate = today.toLocaleDateString("en-US", {
@@ -30,7 +32,7 @@ const Header = ({ setOpen }) => {
             <div className="flex flex-col">
               <div className="flex gap-1 items-center text-black dark:text-white">
                 <h1 className="font-light text-base sm:text-lg">Hello!</h1>
-                <h1 className="font-semibold text-base sm:text-lg">John Doe</h1>
+                <h1 className="font-semibold text-base sm:text-lg">{user?.name || "John Doe"}</h1>
               </div>
               <div className="text-[#989696] font-semibold text-xs sm:text-sm -mt-1">
                 Employee
